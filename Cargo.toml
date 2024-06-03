@@ -23,3 +23,4 @@ tokio = { version = "1.37.0", features = ["full"] }
 
 # OTHER
 uuid = { version = "1.8.0", features = ["v4"] }
+watch = "0.2.3"

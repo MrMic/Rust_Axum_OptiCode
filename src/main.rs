@@ -1,6 +1,11 @@
-use axum::{http::StatusCode, response::IntoResponse, routing::get, Router};
+use axum::{
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, post},
+    Router,
+};
 use chrono::Utc;
-use sea_orm::{Database, DatabaseConnection, EntityTrait, InsertResult, Set};
+use sea_orm::{Database, DatabaseConnection, EntityTrait, Set};
 use uuid::Uuid;
 
 use entity::user;
@@ -33,7 +38,7 @@ async fn test() -> impl IntoResponse {
 async fn create_user() -> impl IntoResponse {
     // * NOTE: ════════════════════════════ DB CONNECTION ════════════════════════════
     let db: DatabaseConnection =
-        Database::connect("postgresql://postgres:pepere@localhost:5432/BlogDB")
+        Database::connect("postgresql://postgres:pepere@172.23.0.3:5432/BlogDB")
             .await
             .unwrap();
 
@@ -45,7 +50,7 @@ async fn create_user() -> impl IntoResponse {
         created_at: Set(Utc::now().naive_utc()),
         ..Default::default()
     };
-    let usr = user::Entity::insert(user_model).exec(&db).await.unwrap();
+    let _usr = user::Entity::insert(user_model).exec(&db).await.unwrap();
 
     (StatusCode::ACCEPTED, "User created").into_response()
 }
