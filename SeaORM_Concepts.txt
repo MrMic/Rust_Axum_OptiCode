@@ -1,0 +1,25 @@
+
+  ┌────────────────────────────────────┐           ┌──────┐
+  │Database with a collection of tables├──────────►│SCHEMA│
+  └────────────────────────────────────┘           └──────┘
+  ┌──────────┐  ┌──────┐
+  │Each TABLE├─►│ENTITY│
+  └──────────┘  └──────┘
+  ┌─────────────────────┐    ┌─────────┐   ┌───────────────┐
+  │Each Table has column├───►│ATTRIBUTE├──►│a Model in Rust│
+  └─────────────────────┘    └─────────┘   └───────────────┘
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ - Model is for Read Operations only. To perform insert, update, or delete,│
+  │ you need to use ActiveModel which attaches meta-data on each attribute    │
+  └───────────────────────────────────────────────────────────────────────────┘
+  ┌────────────────────────────────────────────────────────────────────────────────────┐
+  │Finally, there is no singleton (global context) in SeaORM.                          │
+  │Application code is responsible for managing the ownership of the DatabaseConnection│
+  └────────────────────────────────────────────────────────────────────────────────────┘
+
+
+
+
+
+
+
