@@ -1,19 +1,10 @@
-use axum::{
-    extract::Path,
-    http::StatusCode,
-    response::IntoResponse,
-    routing::{delete, get, post, put},
-    Json, Router,
-};
-use chrono::Utc;
-use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, EntityTrait, QueryFilter};
-use sea_orm::{Database, DatabaseConnection, Set};
-use uuid::Uuid;
+use axum::{Extension, Router};
+use sea_orm::Database;
 
-use entity::user;
-
+mod handlers;
 mod models;
-use crate::models::user_models::{CreateUserModel, LoginUserModel, UpdateUserModel, UserModel};
+mod routes;
+mod utils;
 
 #[tokio::main]
 async fn main() {
@@ -21,13 +12,17 @@ async fn main() {
 }
 
 pub async fn server() {
+    // * INFO: DB Connection ___________________________________________________________
+    let conn_str = (*utils::constants::DATABASE_URL).clone();
+    let db = Database::connect(conn_str)
+        .await
+        .expect("Failed to connect to DB");
+
     // * INFO: ROUTER  _________________________________________________________________
     let app: Router = Router::new()
-        .route("/api/user/register", post(create_user_post))
-        .route("/api/user/login", post(login_user_post))
-        .route("/api/user/:uuid/update", put(update_user_put))
-        .route("/api/user/:uuid/delete", delete(delete_user_delete))
-        .route("/api/user/all", get(all_user_get));
+        .merge(routes::auth_routes::auth_routes())
+        .merge(routes::user_routes::user_routes())
+        .layer(Extension(db));
 
     // * INFO: SERVER _________________________________________________________________
     // * INFO: run our app with hyper, listening globally on port 3000
@@ -42,125 +37,3 @@ pub async fn server() {
 //
 //     (StatusCode::ACCEPTED, "Hi there")
 // }
-
-// __ INFO: CRUD OPERATIONS ___________________________________________
-async fn create_user_post(Json(user_data): Json<CreateUserModel>) -> impl IntoResponse {
-    // * INFO: ════════════════════════════ DB CONNECTION ════════════════════════════
-    let db: DatabaseConnection =
-        Database::connect("postgresql://postgres:pepere@172.23.0.4:5432/BlogDB")
-            .await
-            .unwrap();
-
-    let user_model = user::ActiveModel {
-        name: Set(user_data.name.to_owned()),
-        email: Set(user_data.email.to_owned()),
-        password: Set(user_data.password.to_owned()),
-        uuid: Set(Uuid::new_v4()),
-        created_at: Set(Utc::now().naive_utc()),
-        ..Default::default()
-    };
-    user_model.insert(&db).await.unwrap();
-
-    db.close().await.unwrap();
-    (StatusCode::ACCEPTED, "User created").into_response()
-}
-
-async fn login_user_post(Json(user_data): Json<LoginUserModel>) -> impl IntoResponse {
-    // * INFO: ════════════════════════════ DB CONNECTION ════════════════════════════
-    let db: DatabaseConnection =
-        Database::connect("postgresql://postgres:pepere@172.23.0.4:5432/BlogDB")
-            .await
-            .unwrap();
-
-    let user = entity::user::Entity::find()
-        .filter(
-            Condition::all()
-                .add(entity::user::Column::Email.eq(user_data.email))
-                .add(entity::user::Column::Password.eq(user_data.password)),
-        )
-        .one(&db)
-        .await
-        .unwrap()
-        .unwrap();
-
-    let data = UserModel {
-        name: user.name,
-        email: user.email,
-        password: user.password,
-        uuid: user.uuid,
-        created_at: user.created_at,
-    };
-
-    db.close().await.unwrap();
-    (StatusCode::ACCEPTED, Json(data))
-}
-
-async fn update_user_put(
-    Path(uuid): Path<Uuid>,
-    Json(user_data): Json<UpdateUserModel>,
-) -> impl IntoResponse {
-    let db: DatabaseConnection =
-        Database::connect("postgresql://postgres:pepere@172.23.0.4:5432/BlogDB")
-            .await
-            .unwrap();
-    let mut user: entity::user::ActiveModel = entity::user::Entity::find()
-        .filter(entity::user::Column::Uuid.eq(uuid))
-        .one(&db)
-        .await
-        .unwrap()
-        .unwrap()
-        .into();
-
-    user.name = Set(user_data.name);
-
-    user.update(&db).await.unwrap();
-    db.close().await.unwrap();
-
-    (StatusCode::ACCEPTED, "Updated")
-}
-
-async fn delete_user_delete(Path(uuid): Path<Uuid>) -> impl IntoResponse {
-    let db: DatabaseConnection =
-        Database::connect("postgresql://postgres:pepere@172.23.0.4:5432/BlogDB")
-            .await
-            .unwrap();
-
-    let user = entity::user::Entity::find()
-        .filter(entity::user::Column::Uuid.eq(uuid))
-        .one(&db)
-        .await
-        .unwrap()
-        .unwrap();
-
-    entity::user::Entity::delete_by_id(user.id)
-        .exec(&db)
-        .await
-        .unwrap();
-
-    db.close().await.unwrap();
-    (StatusCode::ACCEPTED, "Deleted")
-}
-
-async fn all_user_get() -> impl IntoResponse {
-    let db: DatabaseConnection =
-        Database::connect("postgresql://postgres:pepere@172.23.0.4:5432/BlogDB")
-            .await
-            .unwrap();
-
-    let users: Vec<UserModel> = entity::user::Entity::find()
-        .all(&db)
-        .await
-        .unwrap()
-        .into_iter()
-        .map(|item| UserModel {
-            name: item.name,
-            email: item.email,
-            password: item.password,
-            uuid: item.uuid,
-            created_at: item.created_at,
-        })
-        .collect();
-
-    db.close().await.unwrap();
-    (StatusCode::ACCEPTED, Json(users))
-}
