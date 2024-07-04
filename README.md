@@ -3,4 +3,4 @@
 
 ## RUST - AXUM - SeaORM - OptiCode
 
-### TIMELINE: 05 => 00:04
+### TIMELINE: 05 => 10:45
