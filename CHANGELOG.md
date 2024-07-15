@@ -1,4 +1,5 @@
 ## What's Changed
+* feat: encode & decode JWT
 * Merge pull request #5 from MrMic/feature/05
 
 ## What's Changed in v05

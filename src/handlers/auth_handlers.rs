@@ -6,8 +6,8 @@ use sea_orm::{
 use uuid::Uuid;
 
 use crate::{
-    models::user_models::{CreateUserModel, LoginUserModel, UserModel},
-    utils::api_error::APIError,
+    models::user_models::{CreateUserModel, LoginUserModel, LoginUserResponseModel},
+    utils::{api_error::APIError, jwt::encode_jwt},
 };
 
 // ______________________________________________________________________
@@ -55,7 +55,7 @@ pub async fn create_user_post(
 pub async fn login_user_post(
     Extension(db): Extension<DatabaseConnection>,
     Json(user_data): Json<LoginUserModel>,
-) -> Result<Json<UserModel>, APIError> {
+) -> Result<Json<LoginUserResponseModel>, APIError> {
     let user = entity::user::Entity::find()
         .filter(
             Condition::all()
@@ -75,13 +75,11 @@ pub async fn login_user_post(
             error_code: Some(44),
         })?;
 
-    let data = UserModel {
-        name: user.name,
-        email: user.email,
-        password: user.password,
-        uuid: user.uuid,
-        created_at: user.created_at,
-    };
+    let token = encode_jwt(user.email).map_err(|_| APIError {
+        message: "Failded to login".to_owned(),
+        status_code: StatusCode::UNAUTHORIZED,
+        error_code: Some(41),
+    })?;
 
-    Ok(Json(data))
+    Ok(Json(LoginUserResponseModel { token }))
 }

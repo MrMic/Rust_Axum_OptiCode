@@ -9,7 +9,6 @@ use crate::{
     utils::api_error::APIError,
 };
 
-// *  TODO: Error Handling have to be implemented
 // ______________________________________________________________________
 pub async fn update_user_put(
     Extension(db): Extension<DatabaseConnection>,
