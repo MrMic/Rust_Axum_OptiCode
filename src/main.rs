@@ -1,4 +1,4 @@
-use axum::{Extension, Router};
+use axum::{middleware, Extension, Router};
 use sea_orm::Database;
 
 mod handlers;
@@ -20,8 +20,9 @@ pub async fn server() {
 
     // * INFO: ROUTER  _________________________________________________________________
     let app: Router = Router::new()
-        .merge(routes::auth_routes::auth_routes())
         .merge(routes::user_routes::user_routes())
+        .route_layer(middleware::from_fn(utils::guards::guard))
+        .merge(routes::auth_routes::auth_routes())
         .layer(Extension(db));
 
     // * INFO: SERVER _________________________________________________________________
