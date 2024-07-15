@@ -1,6 +1,10 @@
-## What's Changed
+## What's Changed in v06
+* Merge pull request #6 from MrMic/feature/06
+* feat(UX): Secure Authentication w/ JWT
 * feat: encode & decode JWT
 * Merge pull request #5 from MrMic/feature/05
+
+**Full Changelog**: https://github.com///compare/v05...v06
 
 ## What's Changed in v05
 * fix: delete unused import
