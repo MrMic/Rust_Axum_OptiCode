@@ -8,10 +8,8 @@ pub fn auth_routes() -> Router {
         .allow_methods([Method::POST])
         .allow_origin(Any);
 
-    let router = Router::new()
+    Router::new()
         .route("/api/user/register", post(auth_handlers::create_user_post))
         .route("/api/user/login", post(auth_handlers::login_user_post))
-        .layer(cors);
-
-    router
+        .layer(cors)
 }

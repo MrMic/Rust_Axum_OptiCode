@@ -20,6 +20,7 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
+                    .col(ColumnDef::new(Post::Uuid).uuid().unique_key().not_null())
                     .col(ColumnDef::new(Post::Title).string().not_null())
                     .col(ColumnDef::new(Post::Text).string().not_null())
                     .col(ColumnDef::new(Post::Image).string().not_null())
@@ -48,6 +49,7 @@ pub enum Post {
     Table,
     Id,
     Title,
+    Uuid,
     Text,
     Image,
     UserId,
