@@ -2,7 +2,7 @@
 
 ## RUST - AXUM - SeaORM - OptiCode
 
-### TIMELINE: 08 => 13:54 - Serve Static Files
+### TIMELINE: 09 => 
 
 ---
 
