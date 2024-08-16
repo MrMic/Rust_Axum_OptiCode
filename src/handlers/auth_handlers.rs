@@ -1,6 +1,6 @@
 use axum::{http::StatusCode, Extension, Json};
 use chrono::Utc;
-use sea_orm::{
+use migration::sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, QueryFilter, Set,
 };
 use uuid::Uuid;

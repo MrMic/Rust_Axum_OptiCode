@@ -1,5 +1,6 @@
 use axum::{middleware, Extension, Router};
-use sea_orm::Database;
+use migration::sea_orm::Database;
+use tower_http::services::ServeDir;
 
 mod handlers;
 mod models;
@@ -24,7 +25,8 @@ pub async fn server() {
         .route_layer(middleware::from_fn(utils::guards::guard))
         .merge(routes::auth_routes::auth_routes())
         .merge(routes::home_routes::home_routes())
-        .layer(Extension(db));
+        .layer(Extension(db))
+        .nest_service("/", ServeDir::new("public"));
 
     // * INFO: SERVER _________________________________________________________________
     // * INFO: run our app with hyper, listening globally on port 3000
@@ -33,9 +35,3 @@ pub async fn server() {
         .await
         .unwrap();
 }
-
-// async fn test() -> impl IntoResponse {
-//     println!("test API");
-//
-//     (StatusCode::ACCEPTED, "Hi there")
-// }
