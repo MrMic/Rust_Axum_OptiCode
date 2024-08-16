@@ -2,4 +2,8 @@
 
 ## RUST - AXUM - SeaORM - OptiCode
 
-### TIMELINE: 07 => 19:38
+### TIMELINE: 08 => 13:54 - Serve Static Files
+
+---
+
+[Rust](https://github.com/MrMic/Rust) - [Axum](https://github.com/tokio-rs/axum) - [SeaORM](https://github.com/SeaQL/sea-orm) - [OptiCode](https://github.com/MrMic/OptiCode)

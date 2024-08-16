@@ -5,7 +5,7 @@ use axum::{
     response::Response,
 };
 use axum_extra::headers::{authorization::Bearer, Authorization, HeaderMapExt};
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use migration::sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
 use crate::utils::api_error::APIError;
 
