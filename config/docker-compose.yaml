@@ -1,0 +1,25 @@
+version: "3.7"
+
+networks:
+  localprom:
+    driver: bridge
+
+services:
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - localprom
+    ports:
+      - 9090:9090
+  grafana:
+    container_name: grafana
+    image: grafana/grafana-enterprise
+    ports:
+      - 3001:3000
+    networks:
+      - localprom
+
