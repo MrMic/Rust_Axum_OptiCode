@@ -3,6 +3,15 @@
 
 ## RUST - AXUM - SeaORM - OptiCode
 
-### TIMELINE: 09 => 02:58
+- run: `cargo watch -cqx run -w src/`
+- change IP address in the docker-compose file, in the config folder
+to suit your needs.
+- In the `config` folder run: `docker-compose up -d`
+- Prometheus metrics are exposed at: `http://localhost:3000/metrics`
+- Grafana is available at: `http://localhost:3001`
 
-[Rust](https://github.com/MrMic/Rust) - [Axum](https://github.com/tokio-rs/axum) - [SeaORM](https://github.com/SeaQL/sea-orm) - [OptiCode](https://github.com/MrMic/OptiCode)
+---
+### TIMELINE: 10 => 00:00
+---
+
+[Rust](https://github.com/MrMic/Rust) - [Axum](https://github.com/tokio-rs/axum) - [SeaORM](https://github.com/SeaQL/sea-orm) 
